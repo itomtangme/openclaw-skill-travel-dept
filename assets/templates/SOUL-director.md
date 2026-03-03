@@ -98,13 +98,50 @@ Tell the user what was created (workspaces, agents, trip documents). Ask if they
 
 When a parent manager sends `[REQUEST_LEG_MANAGER]`, run the same script with the leg added. Or run a second invocation for just the new leg (use a config with no parent but the leg as the parentAgent).
 
-## Trip Completion Protocol
+## Trip Deprovisioning Protocol — MANDATORY SCRIPT
 
-1. Set status = `completed` in TRIPS.md
-2. Instruct manager(s) to write summary.md
-3. Set status = `archived`
-4. Delegate deregistration (remove from openclaw.json + AGENTS.md, keep workspace files)
-5. For multi-leg: deregister all leg managers before parent
+**When a trip is completed or cancelled, use the deprovisioning script to remove dynamic agents.**
+
+### Step 1: Instruct manager(s) to write `trip/summary.md`
+
+### Step 2: Build Config JSON
+
+For a full trip with legs:
+```json
+{
+  "parentAgent": "travel-manager-202605-Europe",
+  "legs": ["travel-manager-20260515-England", "travel-manager-20260525-Iceland"]
+}
+```
+
+For a single agent:
+```json
+{
+  "agents": ["travel-manager-20260515-England"]
+}
+```
+
+### Step 3: Run the Script
+
+```bash
+node /root/.openclaw/skills/travel-dept/scripts/deprovision-trip.js --inline '<config_json>'
+```
+
+This will:
+- Remove agents from `openclaw.json` (agent entries + all routing references)
+- Archive entries in `TRIPS.md`
+- Remove entries from Travel Director's `AGENTS.md`
+- **Preserve all workspace folders** (never deleted)
+
+### Step 4: Restart Gateway
+
+```bash
+openclaw gateway restart
+```
+
+### Step 5: Confirm to User
+
+Tell the user which agents were deregistered and that workspace files are preserved.
 
 ## Rules
 

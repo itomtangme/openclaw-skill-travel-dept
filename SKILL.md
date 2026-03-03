@@ -225,14 +225,29 @@ The Travel Director should:
 1. Confirm to the user what was created (list workspaces + agents)
 2. Ask if the user wants to start detailed planning for any leg
 
-## Deprovisioning (on trip completion)
+## Deprovisioning a Trip (Automated)
 
-See `scripts/provision-trip-manager.md` for deprovisioning steps. Key points:
-1. Manager writes summary.md
-2. Status → archived in TRIPS.md
-3. Remove from openclaw.json agents list **and** from `travel`'s `subagents.allowAgents`; keep workspace files
-4. Restart gateway
-5. For multi-leg: deregister legs before parent
+**When a trip is completed or cancelled, use the deprovisioning script.**
+
+### The Script
+
+`scripts/deprovision-trip.js` — removes dynamic agents cleanly:
+1. Removes agents from `openclaw.json` (entries + all `subagents.allowAgents` references)
+2. Archives entries in `TRIPS.md`
+3. Removes entries from Travel Director's `AGENTS.md`
+4. **Preserves all workspace folders** (never deleted)
+
+### How to Use
+
+```bash
+# Full trip with legs (legs removed first, then parent):
+node /root/.openclaw/skills/travel-dept/scripts/deprovision-trip.js --inline '{"parentAgent":"travel-manager-202605-Europe","legs":["travel-manager-20260515-England","travel-manager-20260525-Iceland","travel-manager-20260603-France","travel-manager-20260614-Spain"]}'
+
+# Single agent:
+node /root/.openclaw/skills/travel-dept/scripts/deprovision-trip.js --inline '{"agents":["travel-manager-20260515-England"]}'
+```
+
+After the script succeeds, run `openclaw gateway restart`.
 
 ## Key References
 
