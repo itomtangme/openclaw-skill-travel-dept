@@ -61,7 +61,21 @@ For parent trips only, also copy:
 
 Replace all placeholders: `[TRIP_NAME]`, `[TRIP_ID]`, `[AGENT_ID]`, `[START_DATE]`, `[END_DATE]`
 
-### 5. Add Agent to openclaw.json
+### 5. Create Agent Directory
+
+```bash
+AGENT_ID="travel-manager-YYYYMMDD-Slug"
+AGENT_DIR="/root/.openclaw/agents/${AGENT_ID}/agent"
+
+mkdir -p "${AGENT_DIR}"
+mkdir -p "/root/.openclaw/agents/${AGENT_ID}/sessions"
+
+# Copy provider config from an existing agent
+cp /root/.openclaw/agents/main/agent/models.json "${AGENT_DIR}/"
+cp /root/.openclaw/agents/main/agent/auth-profiles.json "${AGENT_DIR}/"
+```
+
+### 6. Add Agent to openclaw.json
 
 Read current config, merge new agent entry:
 
@@ -70,6 +84,11 @@ Read current config, merge new agent entry:
   "id": "<agent-id>",
   "name": "Travel Manager: <Trip Name>",
   "workspace": "workspace-<agent-id>",
+  "agentDir": "/root/.openclaw/agents/<agent-id>/agent",
+  "model": {
+    "primary": "github-copilot/claude-sonnet-4.6",
+    "fallbacks": ["openrouter/anthropic/claude-sonnet-4.6"]
+  },
   "identity": {
     "emoji": "🗺️"
   }
@@ -78,17 +97,41 @@ Read current config, merge new agent entry:
 
 > **Note:** Do not add `tier`, `layer`, `parent`, `persistent` to openclaw.json — these are not recognized config keys and will crash the gateway. Store them in the agent's SOUL.md instead.
 
-### 6. Update Travel Director AGENTS.md
+### 7. Update Travel Director's Routing
+
+Add the new manager to `travel`'s `subagents.allowAgents` in `openclaw.json` so that the Travel Director can delegate to it:
+
+```json
+{
+  "id": "travel",
+  "subagents": {
+    "allowAgents": ["travel-advisor", "travel-validator", "<agent-id>"]
+  }
+}
+```
+
+Also, if the trip manager needs to call `travel-validator` directly (for validation gate), add its own `subagents.allowAgents`:
+
+```json
+{
+  "id": "<agent-id>",
+  "subagents": {
+    "allowAgents": ["travel-validator"]
+  }
+}
+```
+
+### 8. Update Travel Director AGENTS.md
 
 Add entry to the "Trip Managers (dynamic)" table in `workspace-travel/AGENTS.md`.
 
-### 7. Restart Gateway
+### 9. Restart Gateway
 
 ```bash
 openclaw gateway restart
 ```
 
-### 8. Notify
+### 10. Notify
 
 If this is a leg manager requested by a parent manager, notify the parent:
 
@@ -98,7 +141,7 @@ agent-id: <agent-id>
 workspace: workspace-<agent-id>
 ```
 
-### 9. Spawn Manager
+### 11. Spawn Manager
 
 Send initial task to the new manager with trip context.
 
@@ -107,6 +150,6 @@ Send initial task to the new manager with trip context.
 See Trip Completion Protocol in the spec. Key points:
 1. Manager writes summary.md
 2. Status → archived in TRIPS.md
-3. Remove from openclaw.json and AGENTS.md (but keep workspace files)
+3. Remove from openclaw.json agents list **and** from `travel`'s `subagents.allowAgents`; keep workspace files
 4. Restart gateway
 5. For multi-leg: deregister legs before parent
