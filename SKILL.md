@@ -42,6 +42,7 @@ Copy from `assets/templates/` in this skill folder:
 | `SOUL-advisor.md` | `workspace-travel-advisor/SOUL.md` |
 | `IDENTITY-advisor.md` | `workspace-travel-advisor/IDENTITY.md` |
 | `TOOLS-advisor.md` | `workspace-travel-advisor/TOOLS.md` |
+| `AGENTS-advisor.md` | `workspace-travel-advisor/AGENTS.md` |
 | `AGENT-MANIFEST-advisor.md` | `workspace-travel-advisor/AGENT-MANIFEST.md` |
 | `HEARTBEAT-advisor.md` | `workspace-travel-advisor/HEARTBEAT.md` |
 | `BOOTSTRAP-advisor.md` | `workspace-travel-advisor/BOOTSTRAP.md` |
@@ -49,6 +50,7 @@ Copy from `assets/templates/` in this skill folder:
 | `SOUL-validator.md` | `workspace-travel-validator/SOUL.md` |
 | `IDENTITY-validator.md` | `workspace-travel-validator/IDENTITY.md` |
 | `TOOLS-validator.md` | `workspace-travel-validator/TOOLS.md` |
+| `AGENTS-validator.md` | `workspace-travel-validator/AGENTS.md` |
 | `AGENT-MANIFEST-validator.md` | `workspace-travel-validator/AGENT-MANIFEST.md` |
 | `HEARTBEAT-validator.md` | `workspace-travel-validator/HEARTBEAT.md` |
 | `BOOTSTRAP-validator.md` | `workspace-travel-validator/BOOTSTRAP.md` |
