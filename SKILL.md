@@ -63,7 +63,21 @@ Also copy all `trip/*-template.md` files into `workspace-travel/templates/`.
 
 Copy `assets/templates/USER.md` into each workspace. Customize if needed.
 
-### 4. Add agents to openclaw.json
+### 4. Create agent directories
+
+Each agent needs an `agentDir` with provider/model config:
+
+```bash
+mkdir -p /root/.openclaw/agents/{travel,travel-advisor,travel-validator}/{agent,sessions}
+
+# Copy models.json and auth-profiles.json from an existing agent (e.g. main)
+for agent in travel travel-advisor travel-validator; do
+  cp /root/.openclaw/agents/main/agent/models.json /root/.openclaw/agents/$agent/agent/
+  cp /root/.openclaw/agents/main/agent/auth-profiles.json /root/.openclaw/agents/$agent/agent/
+done
+```
+
+### 5. Add agents to openclaw.json
 
 Merge the following into the `agents` array of `~/.openclaw/openclaw.json`:
 
@@ -72,6 +86,11 @@ Merge the following into the `agents` array of `~/.openclaw/openclaw.json`:
   "id": "travel",
   "name": "Travel Director",
   "workspace": "workspace-travel",
+  "agentDir": "/root/.openclaw/agents/travel/agent",
+  "model": {
+    "primary": "github-copilot/claude-sonnet-4.6",
+    "fallbacks": ["openrouter/anthropic/claude-sonnet-4.6"]
+  },
   "identity": {
     "emoji": "✈️"
   }
@@ -80,6 +99,11 @@ Merge the following into the `agents` array of `~/.openclaw/openclaw.json`:
   "id": "travel-advisor",
   "name": "Trip Advisor",
   "workspace": "workspace-travel-advisor",
+  "agentDir": "/root/.openclaw/agents/travel-advisor/agent",
+  "model": {
+    "primary": "github-copilot/claude-sonnet-4.6",
+    "fallbacks": ["openrouter/anthropic/claude-sonnet-4.6"]
+  },
   "identity": {
     "emoji": "💡"
   }
@@ -88,6 +112,11 @@ Merge the following into the `agents` array of `~/.openclaw/openclaw.json`:
   "id": "travel-validator",
   "name": "Itinerary Validator",
   "workspace": "workspace-travel-validator",
+  "agentDir": "/root/.openclaw/agents/travel-validator/agent",
+  "model": {
+    "primary": "github-copilot/claude-sonnet-4.6",
+    "fallbacks": ["openrouter/anthropic/claude-sonnet-4.6"]
+  },
   "identity": {
     "emoji": "✅"
   }
@@ -96,7 +125,20 @@ Merge the following into the `agents` array of `~/.openclaw/openclaw.json`:
 
 > **Note:** Agent metadata like `tier`, `layer`, `parent`, `persistent`, and `shared_service` are **not** valid openclaw.json keys. They belong in each agent's workspace files (SOUL.md, IDENTITY.md). Only `id`, `name`, `workspace`, `identity.emoji`, `model`, `subagents`, and `agentDir` are recognized config keys.
 
-### 5. Add routing entry to main AGENTS.md
+### 6. Add `travel` to main's routing allowlist
+
+In `openclaw.json`, ensure `main`'s `subagents.allowAgents` includes `"travel"`:
+
+```json
+{
+  "id": "main",
+  "subagents": {
+    "allowAgents": ["planner", "sysadmin", "full-power", "travel"]
+  }
+}
+```
+
+### 8. Add routing entry to main AGENTS.md
 
 Add to the main workspace `AGENTS.md` sub-agent table:
 
@@ -104,13 +146,13 @@ Add to the main workspace `AGENTS.md` sub-agent table:
 | travel | Travel Director | L1-D | workspace-travel | ✈️ | Permanent | Tier-2 | All travel, trips, itineraries, exploration |
 ```
 
-### 6. Restart gateway
+### 9. Restart gateway
 
 ```bash
 openclaw gateway restart
 ```
 
-### 7. Verify
+### 10. Verify
 
 - Send: *"How is Japan in June?"* → should route to travel → travel-advisor (no manager spawned)
 - Send: *"Plan my Iceland trip in May 2026."* → should route to travel → confirmation gate → manager provisioned
