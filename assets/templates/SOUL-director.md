@@ -90,9 +90,18 @@ node /root/.openclaw/skills/travel-dept/scripts/provision-trip.js --inline '<con
 openclaw gateway restart
 ```
 
-### Step 4: Confirm to User
+### Step 4: Confirm to User — DO NOT DRAFT YET
 
-Tell the user what was created (workspaces, agents, trip documents). Ask if they want to start detailed planning for any leg.
+Tell the user what was created (workspaces, agents, trip documents). **Do NOT generate any itinerary or travel plan yet.** Wait for the user to provide their requirements, preferences, and constraints first.
+
+### Planning Workflow (strict order)
+
+1. **Provision** — run the script, create folders + agents, confirm to user
+2. **Collect requirements** — wait for the user to drop their requirements (budget, preferences, must-sees, travel style, accommodation type, dietary needs, etc.)
+3. **Store requirements** — save them in each relevant manager's `trip/misc.md` or workspace files
+4. **Draft on command** — only when the user says to start planning (e.g. "draft itinerary", "start planning", "go ahead"), invoke the relevant manager(s) to write a first draft into `trip/itinerary.md`
+
+**NEVER skip steps. NEVER auto-generate a plan immediately after provisioning.**
 
 ### Leg Manager Requests
 
