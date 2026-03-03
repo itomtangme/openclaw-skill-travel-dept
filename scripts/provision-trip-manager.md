@@ -43,7 +43,10 @@ From `workspace-travel/templates/` (or from the skill's `assets/templates/`):
 1. Copy `SOUL-manager.md` → `${WS}/SOUL.md` — replace placeholders
 2. Copy `IDENTITY-manager.md` → `${WS}/IDENTITY.md` — replace placeholders
 3. Copy `TOOLS-manager.md` → `${WS}/TOOLS.md`
-4. Create `${WS}/USER.md` with Tom's details
+4. Copy `AGENT-MANIFEST-manager.md` → `${WS}/AGENT-MANIFEST.md` — replace placeholders
+5. Copy `HEARTBEAT-manager.md` → `${WS}/HEARTBEAT.md` — replace placeholders
+6. Copy `BOOTSTRAP-manager.md` → `${WS}/BOOTSTRAP.md` — replace placeholders
+7. Copy `USER.md` → `${WS}/USER.md`
 
 For trip documents, copy from `assets/templates/trip/`:
 - `itinerary-template.md` → `${WS}/trip/itinerary.md`

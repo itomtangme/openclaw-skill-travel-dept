@@ -29,28 +29,37 @@ Copy from `assets/templates/` in this skill folder:
 
 | Source template | Destination |
 |---|---|
+| **Travel Director** | |
 | `SOUL-director.md` | `workspace-travel/SOUL.md` |
 | `IDENTITY-director.md` | `workspace-travel/IDENTITY.md` |
 | `TOOLS-director.md` | `workspace-travel/TOOLS.md` |
 | `AGENTS-director.md` | `workspace-travel/AGENTS.md` |
+| `AGENT-MANIFEST-director.md` | `workspace-travel/AGENT-MANIFEST.md` |
+| `HEARTBEAT-director.md` | `workspace-travel/HEARTBEAT.md` |
+| `BOOTSTRAP-director.md` | `workspace-travel/BOOTSTRAP.md` |
 | `TRIPS-template.md` | `workspace-travel/TRIPS.md` |
+| **Trip Advisor** | |
 | `SOUL-advisor.md` | `workspace-travel-advisor/SOUL.md` |
 | `IDENTITY-advisor.md` | `workspace-travel-advisor/IDENTITY.md` |
 | `TOOLS-advisor.md` | `workspace-travel-advisor/TOOLS.md` |
+| `AGENT-MANIFEST-advisor.md` | `workspace-travel-advisor/AGENT-MANIFEST.md` |
+| `HEARTBEAT-advisor.md` | `workspace-travel-advisor/HEARTBEAT.md` |
+| `BOOTSTRAP-advisor.md` | `workspace-travel-advisor/BOOTSTRAP.md` |
+| **Itinerary Validator** | |
 | `SOUL-validator.md` | `workspace-travel-validator/SOUL.md` |
 | `IDENTITY-validator.md` | `workspace-travel-validator/IDENTITY.md` |
 | `TOOLS-validator.md` | `workspace-travel-validator/TOOLS.md` |
+| `AGENT-MANIFEST-validator.md` | `workspace-travel-validator/AGENT-MANIFEST.md` |
+| `HEARTBEAT-validator.md` | `workspace-travel-validator/HEARTBEAT.md` |
+| `BOOTSTRAP-validator.md` | `workspace-travel-validator/BOOTSTRAP.md` |
+
+Copy `USER.md` into each workspace (`workspace-travel/`, `workspace-travel-advisor/`, `workspace-travel-validator/`).
 
 Also copy all `trip/*-template.md` files into `workspace-travel/templates/`.
 
 ### 3. Create USER.md in each workspace
 
-Each workspace needs a `USER.md` with at minimum:
-```markdown
-# USER.md
-- **Name:** Tom
-- **Timezone:** Asia/Hong_Kong
-```
+Copy `assets/templates/USER.md` into each workspace. Customize if needed.
 
 ### 4. Add agents to openclaw.json
 
