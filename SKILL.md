@@ -60,35 +60,30 @@ Merge the following into the `agents` array of `~/.openclaw/openclaw.json`:
 {
   "id": "travel",
   "name": "Travel Director",
-  "emoji": "✈️",
-  "tier": 2,
-  "layer": "L1-D",
-  "parent": "main",
   "workspace": "workspace-travel",
-  "persistent": true
+  "identity": {
+    "emoji": "✈️"
+  }
 },
 {
   "id": "travel-advisor",
   "name": "Trip Advisor",
-  "emoji": "💡",
-  "tier": 3,
-  "layer": "L3",
-  "parent": "travel",
   "workspace": "workspace-travel-advisor",
-  "persistent": true
+  "identity": {
+    "emoji": "💡"
+  }
 },
 {
   "id": "travel-validator",
   "name": "Itinerary Validator",
-  "emoji": "✅",
-  "tier": 3,
-  "layer": "L3",
-  "parent": "travel",
   "workspace": "workspace-travel-validator",
-  "persistent": true,
-  "shared_service": true
+  "identity": {
+    "emoji": "✅"
+  }
 }
 ```
+
+> **Note:** Agent metadata like `tier`, `layer`, `parent`, `persistent`, and `shared_service` are **not** valid openclaw.json keys. They belong in each agent's workspace files (SOUL.md, IDENTITY.md). Only `id`, `name`, `workspace`, `identity.emoji`, `model`, `subagents`, and `agentDir` are recognized config keys.
 
 ### 5. Add routing entry to main AGENTS.md
 

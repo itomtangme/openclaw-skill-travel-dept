@@ -66,14 +66,14 @@ Read current config, merge new agent entry:
 {
   "id": "<agent-id>",
   "name": "Travel Manager: <Trip Name>",
-  "emoji": "🗺️",
-  "tier": 2,
-  "layer": "L2",
-  "parent": "travel",
   "workspace": "workspace-<agent-id>",
-  "persistent": true
+  "identity": {
+    "emoji": "🗺️"
+  }
 }
 ```
+
+> **Note:** Do not add `tier`, `layer`, `parent`, `persistent` to openclaw.json — these are not recognized config keys and will crash the gateway. Store them in the agent's SOUL.md instead.
 
 ### 6. Update Travel Director AGENTS.md
 
