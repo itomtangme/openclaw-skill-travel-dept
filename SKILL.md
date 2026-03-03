@@ -227,27 +227,50 @@ The Travel Director should:
 
 ## Deprovisioning a Trip (Automated)
 
-**When a trip is completed or cancelled, use the deprovisioning script.**
+**Completed trips stay active for 3 months after completion.** Dynamic sub-agents are preserved so the user can still reference trip data. After the retention period, they are cleaned up.
 
-### The Script
+### Lifecycle
 
-`scripts/deprovision-trip.js` — removes dynamic agents cleanly:
-1. Removes agents from `openclaw.json` (entries + all `subagents.allowAgents` references)
-2. Archives entries in `TRIPS.md`
-3. Removes entries from Travel Director's `AGENTS.md`
-4. **Preserves all workspace folders** (never deleted)
+1. Trip completed → Director sets TRIPS.md status to `completed` + fills `Completed At` date
+2. Agents remain active for **3 months**
+3. After 3 months → `check-completed-trips.js` finds them and deprovisions
 
-### How to Use
+### Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `scripts/check-completed-trips.js` | Scans TRIPS.md for trips completed 3+ months ago, deprovisions them |
+| `scripts/deprovision-trip.js` | Removes specific agents from openclaw.json, archives TRIPS.md, cleans routing |
+
+### Automatic Cleanup
 
 ```bash
-# Full trip with legs (legs removed first, then parent):
-node /root/.openclaw/skills/travel-dept/scripts/deprovision-trip.js --inline '{"parentAgent":"travel-manager-202605-Europe","legs":["travel-manager-20260515-England","travel-manager-20260525-Iceland","travel-manager-20260603-France","travel-manager-20260614-Spain"]}'
+# Dry run — see what would be removed:
+node /root/.openclaw/skills/travel-dept/scripts/check-completed-trips.js
+
+# Execute removal:
+node /root/.openclaw/skills/travel-dept/scripts/check-completed-trips.js --execute
+openclaw gateway restart
+
+# Custom retention period (e.g. 6 months):
+node /root/.openclaw/skills/travel-dept/scripts/check-completed-trips.js --months 6 --execute
+```
+
+### Manual/Immediate Removal
+
+If the user explicitly requests early removal:
+
+```bash
+# Full trip with legs:
+node /root/.openclaw/skills/travel-dept/scripts/deprovision-trip.js --inline '{"parentAgent":"travel-manager-202605-Europe","legs":["travel-manager-20260515-England","travel-manager-20260525-Iceland"]}'
 
 # Single agent:
 node /root/.openclaw/skills/travel-dept/scripts/deprovision-trip.js --inline '{"agents":["travel-manager-20260515-England"]}'
+
+openclaw gateway restart
 ```
 
-After the script succeeds, run `openclaw gateway restart`.
+Workspaces are **never deleted** — only agent registrations are removed.
 
 ## Key References
 

@@ -203,7 +203,7 @@ function updateTripsRegistry(tripId, agentId, parentTrip, dates, description) {
     return;
   }
   let content = fs.readFileSync(tripsPath, 'utf8');
-  const row = `| ${tripId} | ${agentId} | ${parentTrip || '—'} | planning | ${dates} | ${description} |`;
+  const row = `| ${tripId} | ${agentId} | ${parentTrip || '—'} | planning | ${dates} | ${description} | |`;
 
   // Insert before "## Archived Trips" or at end of first table
   if (content.includes('## Archived Trips')) {

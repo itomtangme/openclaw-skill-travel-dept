@@ -100,31 +100,29 @@ When a parent manager sends `[REQUEST_LEG_MANAGER]`, run the same script with th
 
 ## Trip Deprovisioning Protocol — MANDATORY SCRIPT
 
-**When a trip is completed or cancelled, use the deprovisioning script to remove dynamic agents.**
+**Completed trips stay active for 3 months after completion. The deprovisioning happens automatically after the retention period.**
 
-### Step 1: Instruct manager(s) to write `trip/summary.md`
+### When a Trip is Completed
 
-### Step 2: Build Config JSON
+1. Instruct manager(s) to write `trip/summary.md`
+2. Update TRIPS.md: set status to `completed` and fill in the `Completed At` column with today's date (YYYY-MM-DD)
+3. **Do NOT deprovision yet** — the agents remain active for 3 months so the user can reference trip data
 
-For a full trip with legs:
-```json
-{
-  "parentAgent": "travel-manager-202605-Europe",
-  "legs": ["travel-manager-20260515-England", "travel-manager-20260525-Iceland"]
-}
-```
+### Automatic Cleanup (3 months later)
 
-For a single agent:
-```json
-{
-  "agents": ["travel-manager-20260515-England"]
-}
-```
-
-### Step 3: Run the Script
-
+Run the cleanup check periodically (or when reminded):
 ```bash
-node /root/.openclaw/skills/travel-dept/scripts/deprovision-trip.js --inline '<config_json>'
+node /root/.openclaw/skills/travel-dept/scripts/check-completed-trips.js           # dry-run
+node /root/.openclaw/skills/travel-dept/scripts/check-completed-trips.js --execute  # actually deprovision
+openclaw gateway restart
+```
+
+### Manual/Immediate Deprovisioning
+
+If the user explicitly requests early removal:
+```bash
+node /root/.openclaw/skills/travel-dept/scripts/deprovision-trip.js --inline '{"parentAgent":"<id>","legs":["<leg1>","<leg2>"]}'
+openclaw gateway restart
 ```
 
 This will:
@@ -132,16 +130,6 @@ This will:
 - Archive entries in `TRIPS.md`
 - Remove entries from Travel Director's `AGENTS.md`
 - **Preserve all workspace folders** (never deleted)
-
-### Step 4: Restart Gateway
-
-```bash
-openclaw gateway restart
-```
-
-### Step 5: Confirm to User
-
-Tell the user which agents were deregistered and that workspace files are preserved.
 
 ## Rules
 
