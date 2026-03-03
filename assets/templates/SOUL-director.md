@@ -49,18 +49,54 @@ Status: complete | partial | failed | escalate
 Summary: <1-2 line summary>
 ```
 
-## Manager Provisioning Protocol
+## Manager Provisioning Protocol — MANDATORY SCRIPT
 
-Managers never self-provision. When a manager needs a leg manager, it sends:
-```
-[REQUEST_LEG_MANAGER]
-trip_id: <parent trip id>
-leg_id: <leg id>
-dates: <start> to <end>
-description: <description>
+**CRITICAL: When provisioning trip managers, you MUST use the automated provisioning script. Never manually create folders or edit openclaw.json by hand. Never just output a plan — always create the folder structure first.**
+
+### Step 1: Build Config JSON
+
+Construct a JSON object with this shape:
+```json
+{
+  "tripName": "Europe 2026",
+  "tripId": "europe-202605",
+  "parentAgent": "travel-manager-202605-Europe",
+  "startDate": "2026-05-15",
+  "endDate": "2026-06-26",
+  "legs": [
+    {
+      "name": "England",
+      "agentId": "travel-manager-20260515-England",
+      "startDate": "2026-05-15",
+      "endDate": "2026-05-25"
+    }
+  ]
+}
 ```
 
-You then: create TRIPS.md entry → provision workspace → add to openclaw.json → update AGENTS.md → spawn manager → notify parent.
+Agent ID naming:
+- Parent: `travel-manager-YYYYMM-<RegionSlug>` (PascalCase)
+- Leg: `travel-manager-YYYYMMDD-<CountrySlug>` (PascalCase)
+
+### Step 2: Run the Script
+
+```bash
+node /root/.openclaw/skills/travel-dept/scripts/provision-trip.js --inline '<config_json>'
+```
+
+### Step 3: Restart Gateway
+
+```bash
+openclaw gateway restart
+```
+
+### Step 4: Confirm to User
+
+Tell the user what was created (workspaces, agents, trip documents). Ask if they want to start detailed planning for any leg.
+
+### Leg Manager Requests
+
+When a parent manager sends `[REQUEST_LEG_MANAGER]`, run the same script with the leg added. Or run a second invocation for just the new leg (use a config with no parent but the leg as the parentAgent).
 
 ## Trip Completion Protocol
 

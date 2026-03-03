@@ -1,7 +1,7 @@
 # Travel Department Skill
 
 **Name:** `travel-dept`
-**Version:** 0.3.0
+**Version:** 0.4.0
 **Description:** Travel department for OpenClaw — L1 Director + L2 Trip Managers + L3 Itinerary Validator + L3 Trip Advisor.
 
 ## When to Use
@@ -70,7 +70,7 @@ Each agent needs an `agentDir` with provider/model config:
 ```bash
 mkdir -p /root/.openclaw/agents/{travel,travel-advisor,travel-validator}/{agent,sessions}
 
-# Copy models.json and auth-profiles.json from an existing agent (e.g. main)
+# Copy provider config from an existing agent (e.g. main)
 for agent in travel travel-advisor travel-validator; do
   cp /root/.openclaw/agents/main/agent/models.json /root/.openclaw/agents/$agent/agent/
   cp /root/.openclaw/agents/main/agent/auth-profiles.json /root/.openclaw/agents/$agent/agent/
@@ -160,12 +160,83 @@ openclaw gateway restart
 - Send: *"How is Japan in June?"* → should route to travel → travel-advisor (no manager spawned)
 - Send: *"Plan my Iceland trip in May 2026."* → should route to travel → confirmation gate → manager provisioned
 
-## Provisioning a New Trip Manager
+## Provisioning a New Trip (Automated)
 
-See `scripts/provision-trip-manager.md` for the step-by-step protocol Travel Director follows when spawning a new L2 manager.
+**When Travel Director receives confirmed planning intent, it MUST use the provisioning script.**
+
+### The Script
+
+`scripts/provision-trip.js` — a Node.js script that automatically:
+1. Creates parent trip manager workspace with populated templates
+2. Creates all leg manager workspaces with populated templates
+3. Creates agent directories with `models.json` and `auth-profiles.json`
+4. Updates `openclaw.json` (adds agents + routing)
+5. Updates `TRIPS.md` in `workspace-travel`
+6. Updates `AGENTS.md` in both Travel Director and parent manager workspaces
+
+### How to Use
+
+The Travel Director builds a config JSON and runs:
+
+```bash
+node /root/.openclaw/skills/travel-dept/scripts/provision-trip.js --inline '<config_json>'
+```
+
+Config JSON shape:
+```json
+{
+  "tripName": "Europe 2026",
+  "tripId": "europe-202605",
+  "parentAgent": "travel-manager-202605-Europe",
+  "startDate": "2026-05-15",
+  "endDate": "2026-06-26",
+  "legs": [
+    {
+      "name": "England",
+      "agentId": "travel-manager-20260515-England",
+      "startDate": "2026-05-15",
+      "endDate": "2026-05-25"
+    },
+    {
+      "name": "Iceland",
+      "agentId": "travel-manager-20260525-Iceland",
+      "startDate": "2026-05-25",
+      "endDate": "2026-06-03"
+    }
+  ]
+}
+```
+
+After the script succeeds, run `openclaw gateway restart` to activate the new agents.
+
+### Agent ID Naming Convention
+
+| Scope | Format | Example |
+|---|---|---|
+| Region/month trip | `travel-manager-YYYYMM-<RegionSlug>` | `travel-manager-202605-Europe` |
+| Country/date leg | `travel-manager-YYYYMMDD-<CountrySlug>` | `travel-manager-20260515-England` |
+
+- Slugs: PascalCase, English, no spaces
+- IDs are immutable once assigned
+
+### After Provisioning
+
+The Travel Director should:
+1. Confirm to the user what was created (list workspaces + agents)
+2. Ask if the user wants to start detailed planning for any leg
+
+## Deprovisioning (on trip completion)
+
+See `scripts/provision-trip-manager.md` for deprovisioning steps. Key points:
+1. Manager writes summary.md
+2. Status → archived in TRIPS.md
+3. Remove from openclaw.json agents list **and** from `travel`'s `subagents.allowAgents`; keep workspace files
+4. Restart gateway
+5. For multi-leg: deregister legs before parent
 
 ## Key References
 
 - Full spec: `references/TRAVEL-DEPT-SPEC-v0.3.md`
 - All agent SOUL/IDENTITY/TOOLS templates: `assets/templates/`
 - Trip document templates: `assets/templates/trip/`
+- **Provisioning script: `scripts/provision-trip.js`**
