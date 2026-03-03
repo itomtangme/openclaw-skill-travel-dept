@@ -91,6 +91,9 @@ Merge the following into the `agents` array of `~/.openclaw/openclaw.json`:
     "primary": "github-copilot/claude-sonnet-4.6",
     "fallbacks": ["openrouter/anthropic/claude-sonnet-4.6"]
   },
+  "subagents": {
+    "allowAgents": ["travel-advisor", "travel-validator"]
+  },
   "identity": {
     "emoji": "✈️"
   }
